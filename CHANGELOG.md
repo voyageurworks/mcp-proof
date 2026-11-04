@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- CI only: the macOS workflow now runs on every pull request (not on pushes to `main`), on explicit runner labels (`macos-15-intel`, `macos-15`) instead of `macos-latest`, on Intel and Apple silicon, and has one required check, `macOS result`: a macOS job that ran and failed blocks the merge; if GitHub assigns no Mac, the check passes with a visible warning that macOS was not verified. Every macOS job still runs the stand-in client, the Action from the tarball and the real Claude Code client.
+
 ## 0.1.1 (2026-11-04)
 - First release published by the release workflow (npm trusted publishing, with provenance).
 - Claude Code is started with `MCP_TIMEOUT` set from mcp-proof's `--timeout`, so a server that first has to be downloaded (a cold `npx` cache) no longer shows `failed` because Claude Code's default start-up wait of about 30 seconds ran out. Measured with a server that takes 40 seconds to become ready: `failed` after 32 s before, `verified` after 42 s now.
