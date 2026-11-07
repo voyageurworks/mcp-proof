@@ -29,7 +29,6 @@ jobs:
     timeout-minutes: 15
     env:
       POST: ${{ github.event_name == 'workflow_dispatch' && inputs.post || 'true' }}
-      FACTS_OUT: ${{ runner.temp }}/status.json
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -41,11 +40,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           WORKFLOW: macos.yml
+          FACTS_OUT: ${{ runner.temp }}/status.json
         run: node scripts/macos-report.mjs
       - name: Publish the facts file to the macos-report branch
         if: env.POST == 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          FACTS_OUT: ${{ runner.temp }}/status.json
         run: |
           set -euo pipefail
           dir="$(mktemp -d)"
