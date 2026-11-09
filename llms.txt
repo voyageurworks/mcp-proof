@@ -1,0 +1,16 @@
+# mcp-proof
+
+> mcp-proof proves that an MCP server really starts in real clients. It runs each client it finds in a throwaway home, makes it start your server, watches the MCP conversation and writes dated, labelled evidence (verified, started, failed, not-installed) as a README table, compat.json and badges. It never installs a client or touches real client settings, and its log holds method names only. MIT licence, by Voyageur Works.
+
+Run it (Node.js 22 or newer): `npx -y @voyageurworks/mcp-proof run -- npx -y your-mcp-server`
+In GitHub Actions: `uses: voyageurworks/mcp-proof@v0` with `server:` and `out:`.
+
+## Docs
+- [README](https://github.com/voyageurworks/mcp-proof#readme): labels, clients, limits
+- [Why your MCP server does not start in a client](https://github.com/voyageurworks/mcp-proof/blob/main/docs/why-your-mcp-server-wont-start.md)
+- [Put a verified table and badge in your README](https://github.com/voyageurworks/mcp-proof/blob/main/docs/badge.md)
+- [How it works](https://github.com/voyageurworks/mcp-proof/blob/main/docs/how-it-works.md)
+
+## Package
+- [npm: @voyageurworks/mcp-proof](https://www.npmjs.com/package/@voyageurworks/mcp-proof)
+- [Issues](https://github.com/voyageurworks/mcp-proof/issues)

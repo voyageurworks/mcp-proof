@@ -75,6 +75,8 @@ Exit codes: `0` every client that ran was verified (and at least one ran), `1` a
     out: proof
 ```
 
+Guides: [why your MCP server does not start in a client](docs/why-your-mcp-server-wont-start.md) and [putting a verified table and badge in your README](docs/badge.md).
+
 The Action runs on the runner you choose, so it only finds clients you installed in an earlier step. It never installs clients. See [docs/how-it-works.md](docs/how-it-works.md).
 
 ## What it records, and what it never does
