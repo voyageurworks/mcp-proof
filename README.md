@@ -16,10 +16,10 @@ You need Node 22 or newer. mcp-proof starts each client it finds in a fresh thro
 
 ## What it looks like
 
-A real run on Windows 11 against the published `@voyageurworks/handoff-desk` server (mcp-proof 0.1.0, 2026-11-03):
+A real run on Windows 11 against the published `@voyageurworks/handoff-desk` server, version 1.2.4 (mcp-proof 0.1.5 with the handshake column, 2026-11-11):
 
 ```text
-Claude Code                verified 2.1.317
+Claude Code                verified 2.1.322
 mcp-proof stand-in client  verified built-in
 ```
 
@@ -27,8 +27,8 @@ mcp-proof stand-in client  verified built-in
 
 | Client | Version | System | Handshake | Result | Date |
 | --- | --- | --- | --- | --- | --- |
-| Claude Code | 2.1.317 | win32 x64, Node 24.20.0 | initialize | verified | 2026-11-03 |
-| mcp-proof stand-in client (stand-in, not a real product) | built-in | win32 x64, Node 24.20.0 | initialize | verified | 2026-11-03 |
+| Claude Code | 2.1.322 | win32 x64, Node 24.20.0 | server/discover, initialize | verified | 2026-11-11 |
+| mcp-proof stand-in client (stand-in, not a real product) | built-in | win32 x64, Node 24.20.0 | initialize | verified | 2026-11-11 |
 
 ## Why
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **A Handshake column in the table.** `table.md` (and `mcp-proof table`) now shows which handshake the client used, derived from the `methods` already in `compat.json`: `server/discover`, `initialize`, or both (the client tried `server/discover` first and fell back to `initialize`); `-` when neither was seen. `compat.json` is unchanged. Contributed by yonash24 (#27, closes #24). The README example is now a real run on 2026-11-11 (Claude Code 2.1.322 shows both).
+
 ## 0.1.5 (2026-11-11)
 
 Two first-run fixes found by running mcp-proof on handoff-desk's own repository. The labels, `compat.json` (schema 1), exit codes and `--json` are unchanged.
