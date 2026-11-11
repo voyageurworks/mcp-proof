@@ -1,0 +1,14 @@
+[
+  { "slug": "server-everything", "package": "@modelcontextprotocol/server-everything" },
+  { "slug": "server-memory", "package": "@modelcontextprotocol/server-memory" },
+  { "slug": "server-sequential-thinking", "package": "@modelcontextprotocol/server-sequential-thinking" },
+  { "slug": "server-filesystem", "package": "@modelcontextprotocol/server-filesystem", "args": ["."] },
+  { "slug": "context7-mcp", "package": "@upstash/context7-mcp" },
+  { "slug": "playwright-mcp", "package": "@playwright/mcp" },
+  { "slug": "chrome-devtools-mcp", "package": "chrome-devtools-mcp", "args": ["--no-usage-statistics"] },
+  { "slug": "shadcn", "package": "shadcn", "args": ["mcp"] },
+  { "slug": "mongodb-mcp-server", "package": "mongodb-mcp-server", "args": ["--telemetry", "disabled"] },
+  { "slug": "notion-mcp-server", "package": "@notionhq/notion-mcp-server" },
+  { "slug": "exa-mcp-server", "package": "exa-mcp-server" },
+  { "slug": "firecrawl-mcp", "package": "firecrawl-mcp" }
+]

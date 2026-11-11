@@ -1,0 +1,73 @@
+name: Survey
+
+# The living survey: starts a fixed list of well-known MCP servers (survey/servers.json) in the real Claude Code with mcp-proof and
+# publishes a dated page and one record per server to the `survey-data` branch. Method and limits: scripts/survey.mjs and the
+# hand-run survey in survey/2026-11/.
+#
+# Two jobs, so third-party code never runs next to a token that can write:
+#   run      read-only token; installs each server (install scripts off) and starts it. Nothing here can change the repository.
+#   publish  the only job that can write; it only moves the files the first job produced onto the survey-data branch (a single
+#            commit, replaced each time) and runs no dependency or server code.
+#
+# By hand only for now. A monthly schedule is added after a first run has been read and found sound.
+on:
+  workflow_dispatch:
+
+# No permissions unless a job asks for them.
+permissions: {}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - run: npm install --global pnpm@10
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: npm install --global @anthropic-ai/claude-code@latest
+      - name: Start each server in Claude Code
+        run: node scripts/survey.mjs --servers survey/servers.json --work "$RUNNER_TEMP/survey-work" --out survey-out
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: survey
+          path: survey-out
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: run
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: survey
+          path: survey-out
+      - name: Publish the page and records to the survey-data branch
+        working-directory: survey-out
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          for f in *; do
+            case "$f" in
+              README.md|*.compat.json) ;;
+              *) echo "unexpected file: $f"; exit 1 ;;
+            esac
+          done
+          git init -q -b survey-data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md ./*.compat.json
+          git commit -q -m "Survey $(date -u +%F)"
+          git push -q --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" survey-data
