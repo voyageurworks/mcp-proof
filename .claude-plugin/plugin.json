@@ -1,7 +1,7 @@
 {
   "name": "mcp-proof",
   "description": "Prove an MCP server really starts in real clients, with dated, labelled evidence. Skill for Claude Code.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": {
     "name": "Voyageur Works",
     "url": "https://github.com/voyageurworks"

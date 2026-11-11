@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.1.6 (2026-11-11)
+
+A failure now says which kind it was, the table shows which handshake each client used (a first outside contribution), and there is a Claude Code plugin. Labels, `compat.json` (schema 1), exit codes and `--json` are unchanged.
 
 - **A Claude Code plugin and skill** (`.claude-plugin/`, `skill/`), installed from GitHub with `/plugin marketplace add voyageurworks/mcp-proof` and `/plugin install mcp-proof@voyageurworks-mcp-proof`. It is not part of the npm package (it installs from git). A test (`src/plugin.test.ts`) keeps the plugin and marketplace versions equal to `package.json`, so a release must bump them too. Validated with `claude plugin validate`, installed from a clean copy in a throwaway home with Claude Code 2.1.322 on Windows 11; the skill listed once. An assistant following the skill in a session was not run.
 

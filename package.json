@@ -1,6 +1,6 @@
 {
   "name": "@voyageurworks/mcp-proof",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Prove an MCP server starts in real clients: runs it through each client in a throwaway home and records dated, labelled evidence.",
   "license": "MIT",
   "repository": { "type": "git", "url": "git+https://github.com/voyageurworks/mcp-proof.git" },
