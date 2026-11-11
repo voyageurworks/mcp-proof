@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **A Claude Code plugin and skill** (`.claude-plugin/`, `skill/`), installed from GitHub with `/plugin marketplace add voyageurworks/mcp-proof` and `/plugin install mcp-proof@voyageurworks-mcp-proof`. It is not part of the npm package (it installs from git). A test (`src/plugin.test.ts`) keeps the plugin and marketplace versions equal to `package.json`, so a release must bump them too. Validated with `claude plugin validate`, installed from a clean copy in a throwaway home with Claude Code 2.1.322 on Windows 11; the skill listed once. An assistant following the skill in a session was not run.
+
 - **A Handshake column in the table.** `table.md` (and `mcp-proof table`) now shows which handshake the client used, derived from the `methods` already in `compat.json`: `server/discover`, `initialize`, or both (the client tried `server/discover` first and fell back to `initialize`); `-` when neither was seen. `compat.json` is unchanged. Contributed by yonash24 (#27, closes #24). The README example is now a real run on 2026-11-11 (Claude Code 2.1.322 shows both).
 
 ## 0.1.5 (2026-11-11)
