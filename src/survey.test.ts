@@ -80,8 +80,9 @@ describe("survey/servers.json", () => {
 
 describe(".github/workflows/survey.yml", () => {
   const text = read(".github/workflows/survey.yml");
-  it("runs only on a free runner, by hand first (a schedule is added only after a proven run)", () => {
+  it("runs by hand or monthly, never on a pull request, and only on a free runner", () => {
     expect(text).toMatch(/workflow_dispatch:/);
+    expect(text).toMatch(/schedule:\s*\n\s+- cron: "\d+ \d+ \d+ \* \*"/);
     expect(text).not.toMatch(/pull_request_target/);
     expect(text).not.toMatch(/\bpull_request:/);
   });

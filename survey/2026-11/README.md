@@ -58,6 +58,10 @@ mcp-proof run --client claude-code --client standin --timeout 150 --out <dir> --
 
 Everything else is simply not in this sample. If you want a server added, or another client tested, open an issue using the client request form; mcp-proof only lists a client after running the real product.
 
+## Newer runs
+
+A workflow re-runs this list monthly (and on demand) on a GitHub runner, with the newest Claude Code and the latest version of each server, and publishes a dated page and one record per server to the [`survey-data` branch](https://github.com/voyageurworks/mcp-proof/tree/survey-data). The first run, on 2026-11-11 on Linux, verified 12 of 12; four servers (`server-everything`, `server-filesystem`, `server-memory`, `chrome-devtools-mcp`) were already at newer versions than the ones above. The same limits apply: a sample, one client, no credentials, no tool calls.
+
 ## Reproduce one
 
 ```sh

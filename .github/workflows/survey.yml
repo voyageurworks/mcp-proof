@@ -9,9 +9,11 @@ name: Survey
 #   publish  the only job that can write; it only moves the files the first job produced onto the survey-data branch (a single
 #            commit, replaced each time) and runs no dependency or server code.
 #
-# By hand only for now. A monthly schedule is added after a first run has been read and found sound.
+# By hand and monthly. The first run (by hand, 2026-11-11, Linux) was read before the schedule was added: 12 of 12 verified, records valid.
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "17 6 3 * *"
 
 # No permissions unless a job asks for them.
 permissions: {}
