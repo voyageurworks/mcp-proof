@@ -81,7 +81,7 @@ Exit codes: `0` every client that ran was verified (and at least one ran), `1` a
     out: proof
 ```
 
-Guides: [why your MCP server does not start in a client](docs/why-your-mcp-server-wont-start.md) and [putting a verified table and badge in your README](docs/badge.md).
+Guides: [why your MCP server does not start in a client](docs/why-your-mcp-server-wont-start.md) and [putting a verified table and badge in your README](docs/badge.md). A dated example of what it finds: [twelve well-known MCP servers in Claude Code on Windows](survey/2026-11/README.md).
 
 The Action runs on the runner you choose, so it only finds clients you installed in an earlier step. It never installs clients. See [docs/how-it-works.md](docs/how-it-works.md).
 
@@ -115,6 +115,13 @@ They solve different problems and work well together: use Inspector to debug and
 - macOS has its own workflow and badge because GitHub's free macOS runners are often not assigned at all. It runs on every pull request, on release tags, weekly and by hand (not on pushes to `main`), on Intel and Apple silicon, and each job starts the real Claude Code client. Its one required check, `macOS result`, blocks a merge when a macOS job ran and failed, and passes with a visible "macOS was NOT verified" warning when GitHub assigned no Mac. A `cancelled` macOS run that never started a step means no runner, not a failing test; it says nothing about the code either way. The commits whose macOS jobs passed are named above.
 - Claude Code waits for a server to start for a limited time. mcp-proof sets that wait from `--timeout` (90 seconds by default, minus a small margin), so a server that first has to be downloaded is fine up to that; beyond it the result is `failed`, and a second run goes faster once the download is cached. (0.1.0 used Claude Code's own default of about 30 seconds, which a cold download could exceed; 0.1.1 sets the wait.)
 - Client command lines change between versions. Every result records the client version and the exact commands.
+
+## More from Voyageur Works
+
+Separate tools from the same studio; each works without the others.
+
+- [handoff-desk](https://github.com/voyageurworks/handoff-desk): hand tasks from Claude Code, Cursor or Codex to a personal agent that reads a folder of markdown notes.
+- [launch-guard-pack](https://github.com/voyageurworks/launch-guard-pack): check a private git repository, or the npm package you are about to publish, before it goes public, without printing what it finds.
 
 ## Development
 

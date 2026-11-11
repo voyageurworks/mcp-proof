@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "tool": "mcp-proof",
+  "version": "0.1.4",
+  "generatedAt": "2026-11-11T11:37:59.134Z",
+  "system": {
+    "os": "win32",
+    "arch": "x64",
+    "release": "10.0.26300",
+    "node": "v24.20.0"
+  },
+  "server": {
+    "command": "node",
+    "args": [
+      "node_modules/@upstash/context7-mcp/dist/index.js"
+    ],
+    "envNames": []
+  },
+  "results": [
+    {
+      "client": "claude-code",
+      "clientName": "Claude Code",
+      "standin": false,
+      "clientVersion": "2.1.322",
+      "label": "verified",
+      "commands": [
+        "claude mcp add proofsrv -- <wrapped server>",
+        "claude mcp list"
+      ],
+      "startedAt": "2026-11-11T11:37:55.304Z",
+      "durationMs": 2766,
+      "methods": [
+        "server/discover",
+        "tools/list"
+      ],
+      "realHome": "unchanged",
+      "notes": []
+    },
+    {
+      "client": "standin",
+      "clientName": "mcp-proof stand-in client",
+      "standin": true,
+      "clientVersion": "built-in",
+      "label": "verified",
+      "commands": [
+        "(built-in client) initialize, notifications/initialized, tools/list"
+      ],
+      "startedAt": "2026-11-11T11:37:58.075Z",
+      "durationMs": 1056,
+      "methods": [
+        "initialize",
+        "notifications/initialized",
+        "tools/list"
+      ],
+      "realHome": "unknown",
+      "notes": []
+    }
+  ]
+}
