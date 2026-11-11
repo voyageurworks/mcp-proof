@@ -1,3 +1,5 @@
+<img src=".github/brand/icon.png" align="right" width="112" alt="mcp-proof icon">
+
 # mcp-proof
 
 [![CI](https://github.com/voyageurworks/mcp-proof/actions/workflows/ci.yml/badge.svg)](https://github.com/voyageurworks/mcp-proof/actions/workflows/ci.yml)
