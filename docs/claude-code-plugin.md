@@ -24,7 +24,7 @@ Then ask, for example: "Prove that my MCP server starts in Claude Code. Start it
 
 ## What was run
 
-On 2026-11-11 the manifests passed `claude plugin validate`, and the marketplace and plugin were added and installed from a clean copy of the repository (no `node_modules`) in a throwaway home with Claude Code 2.1.322 on Windows 11; `claude plugin details mcp-proof` listed one skill, no hooks, no agents and no MCP servers, and about 88 tokens always on. Not run: an assistant actually following the skill in a session (that needs a signed-in Claude Code), and installing from the GitHub name before this page was merged.
+On 2026-11-11 the manifests passed `claude plugin validate`, and the marketplace and plugin were added and installed from a clean copy of the repository (no `node_modules`) in a throwaway home with Claude Code 2.1.322 on Windows 11; `claude plugin details mcp-proof` listed one skill, no hooks, no agents and no MCP servers, and about 88 tokens always on. After this page was merged, the same two commands were run against the GitHub name `voyageurworks/mcp-proof` in a fresh throwaway home (Claude Code 2.1.322, Windows 11, 2026-11-11) and installed the plugin with its one skill. Not run: an assistant actually following the skill in a session (that needs a signed-in Claude Code).
 
 Installing from a folder that holds `node_modules` (for example a working clone built with pnpm) can fail on Windows with `EPERM ... symlink`, because the installer copies the whole folder; use the GitHub name above, or a fresh clone.
 
