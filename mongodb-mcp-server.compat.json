@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "tool": "mcp-proof",
+  "version": "0.1.5",
+  "generatedAt": "2026-11-11T18:53:19.163Z",
+  "system": {
+    "os": "linux",
+    "arch": "x64",
+    "release": "7.0.0-1019-azure",
+    "node": "v24.22.2"
+  },
+  "server": {
+    "command": "node",
+    "args": [
+      "node_modules/mongodb-mcp-server/dist/esm/index.js",
+      "--telemetry",
+      "disabled"
+    ],
+    "envNames": []
+  },
+  "results": [
+    {
+      "client": "claude-code",
+      "clientName": "Claude Code",
+      "standin": false,
+      "clientVersion": "2.1.322",
+      "label": "verified",
+      "commands": [
+        "claude mcp add proofsrv -- <wrapped server>",
+        "claude mcp list"
+      ],
+      "startedAt": "2026-11-11T18:53:17.215Z",
+      "durationMs": 1230,
+      "methods": [
+        "server/discover",
+        "subscriptions/listen",
+        "notifications/subscriptions/acknowledged",
+        "tools/list"
+      ],
+      "realHome": "unchanged",
+      "notes": []
+    },
+    {
+      "client": "standin",
+      "clientName": "mcp-proof stand-in client",
+      "standin": true,
+      "clientVersion": "built-in",
+      "label": "verified",
+      "commands": [
+        "(built-in client) initialize, notifications/initialized, tools/list"
+      ],
+      "startedAt": "2026-11-11T18:53:18.446Z",
+      "durationMs": 716,
+      "methods": [
+        "initialize",
+        "notifications/initialized",
+        "tools/list"
+      ],
+      "realHome": "unknown",
+      "notes": []
+    }
+  ]
+}
