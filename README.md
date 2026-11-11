@@ -87,6 +87,17 @@ Guides: [why your MCP server does not start in a client](docs/why-your-mcp-serve
 
 The Action runs on the runner you choose, so it only finds clients you installed in an earlier step. It never installs clients. See [docs/how-it-works.md](docs/how-it-works.md).
 
+## Use it from Claude Code
+
+Two commands add a small plugin, so your assistant can run mcp-proof when you ask whether your MCP server really starts:
+
+```text
+/plugin marketplace add voyageurworks/mcp-proof
+/plugin install mcp-proof@voyageurworks-mcp-proof
+```
+
+What was run and what was not is on [the plugin page](docs/claude-code-plugin.md).
+
 ## What it records, and what it never does
 
 - **The log holds method names only.** For every message it stores the direction, the kind (request, notification, response, error), the method name and a small integer that pairs a request with its answer (the id the client chose, which may be any string or number, is never written). Parameters, results, tool names, tool output and every other field are dropped before anything is written, so a log or `compat.json` can be shown to anyone, including an AI assistant.

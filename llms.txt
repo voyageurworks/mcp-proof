@@ -10,6 +10,7 @@ In GitHub Actions: `uses: voyageurworks/mcp-proof@v0` with `server:` and `out:`.
 - [Why your MCP server does not start in a client](https://github.com/voyageurworks/mcp-proof/blob/main/docs/why-your-mcp-server-wont-start.md)
 - [Put a verified table and badge in your README](https://github.com/voyageurworks/mcp-proof/blob/main/docs/badge.md)
 - [Survey: twelve well-known MCP servers in Claude Code on Windows (2026-11-11)](https://github.com/voyageurworks/mcp-proof/blob/main/survey/2026-11/README.md)
+- [Use it from Claude Code (plugin and skill)](https://github.com/voyageurworks/mcp-proof/blob/main/docs/claude-code-plugin.md)
 - [How it works](https://github.com/voyageurworks/mcp-proof/blob/main/docs/how-it-works.md)
 
 ## Package

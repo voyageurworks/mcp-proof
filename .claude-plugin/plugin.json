@@ -1,0 +1,20 @@
+{
+  "name": "mcp-proof",
+  "description": "Prove an MCP server really starts in real clients, with dated, labelled evidence. Skill for Claude Code.",
+  "version": "0.1.5",
+  "author": {
+    "name": "Voyageur Works",
+    "url": "https://github.com/voyageurworks"
+  },
+  "homepage": "https://github.com/voyageurworks/mcp-proof#readme",
+  "repository": "https://github.com/voyageurworks/mcp-proof",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "testing",
+    "compatibility",
+    "claude-code"
+  ],
+  "skills": "./skill"
+}

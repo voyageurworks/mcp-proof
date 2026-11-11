@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "voyageurworks-mcp-proof",
+  "owner": { "name": "Voyageur Works" },
+  "metadata": { "description": "mcp-proof: prove an MCP server really starts in real clients, with dated, labelled evidence." },
+  "plugins": [
+    {
+      "name": "mcp-proof",
+      "source": "./",
+      "description": "Starts your MCP server in the real clients installed on this computer (in a throwaway home) and records what happened as a labelled, dated README table and badges. Never installs a client and never touches your real client settings.",
+      "version": "0.1.5",
+      "author": { "name": "Voyageur Works", "url": "https://github.com/voyageurworks" },
+      "homepage": "https://github.com/voyageurworks/mcp-proof#readme",
+      "repository": "https://github.com/voyageurworks/mcp-proof",
+      "license": "MIT",
+      "keywords": ["mcp", "mcp-server", "testing", "compatibility"],
+      "category": "development"
+    }
+  ]
+}
