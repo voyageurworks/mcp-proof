@@ -23,10 +23,10 @@ mcp-proof stand-in client  verified built-in
 
 `--out ./proof` also writes a README-ready table, a machine-readable `compat.json` and static badges:
 
-| Client | Version | System | Result | Date |
-| --- | --- | --- | --- | --- |
-| Claude Code | 2.1.317 | win32 x64, Node 24.20.0 | verified | 2026-11-03 |
-| mcp-proof stand-in client (stand-in, not a real product) | built-in | win32 x64, Node 24.20.0 | verified | 2026-11-03 |
+| Client | Version | System | Handshake | Result | Date |
+| --- | --- | --- | --- | --- | --- |
+| Claude Code | 2.1.317 | win32 x64, Node 24.20.0 | initialize | verified | 2026-11-03 |
+| mcp-proof stand-in client (stand-in, not a real product) | built-in | win32 x64, Node 24.20.0 | initialize | verified | 2026-11-03 |
 
 ## Why
 

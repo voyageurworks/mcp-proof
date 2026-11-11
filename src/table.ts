@@ -16,7 +16,8 @@ export function renderTable(record: CompatRecord): string {
     const name = result.standin ? `${result.clientName} (stand-in, not a real product)` : result.clientName;
     const version = result.clientVersion ?? "n/a";
     const system = `${record.system.os} ${record.system.arch}, Node ${record.system.node.replace(/^v/, "")}`;
-    return `| ${escapeCell(name)} | ${escapeCell(version)} | ${escapeCell(system)} | ${result.label} | ${result.startedAt.slice(0, 10)} |`;
+    const handshake = ["server/discover", "initialize"].filter(method => result.methods.includes(method)).join(", ") || "-";
+    return `| ${escapeCell(name)} | ${escapeCell(version)} | ${escapeCell(system)} | ${handshake} | ${result.label} | ${result.startedAt.slice(0, 10)} |`;
   });
   const used = [...new Set(record.results.map(result => result.label))] as Label[];
   const legend = used.map(label => `- **${label}**: ${LABEL_MEANING[label]}`);
@@ -24,8 +25,8 @@ export function renderTable(record: CompatRecord): string {
   return [
     `Checked with mcp-proof ${record.version} on ${record.generatedAt.slice(0, 10)}.`,
     "",
-    "| Client | Version | System | Result | Date |",
-    "| --- | --- | --- | --- | --- |",
+    "| Client | Version | System | Handshake | Result | Date |",
+    "| --- | --- | --- | --- | --- | --- |",
     ...rows,
     "",
     ...legend,

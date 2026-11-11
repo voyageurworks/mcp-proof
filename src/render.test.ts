@@ -15,6 +15,20 @@ describe("renderTable", () => {
     expect(table).not.toContain("- **failed**:");
     expect(table).toContain("2026-11-03");
   });
+  it.each([
+    { methods: ["server/discover", "tools/list"], handshake: "server/discover" },
+    { methods: ["initialize", "notifications/initialized", "tools/list"], handshake: "initialize" },
+    { methods: ["tools/list"], handshake: "-" },
+    { methods: ["server/discover", "initialize", "tools/list"], handshake: "server/discover, initialize" },
+  ])("shows the handshake for $methods without changing the record", ({ methods, handshake }) => {
+    const record = sample();
+    record.results[0]!.methods = methods;
+    const before = JSON.stringify(record);
+    const table = renderTable(record);
+    expect(table).toContain("| Client | Version | System | Handshake | Result | Date |");
+    expect(table).toContain(`| ${handshake} | verified |`);
+    expect(JSON.stringify(record)).toBe(before);
+  });
   it("escapes pipes in cells and lists notes", () => {
     const record = sample();
     record.results[0]!.clientName = "A|B";

@@ -8,14 +8,14 @@ mcp-proof can write a README-ready table and static badges from a real run. Noth
 npx -y @voyageurworks/mcp-proof run --out ./proof -- npx -y your-mcp-server
 ```
 
-`--out ./proof` writes `compat.json`, `table.md` and a `badges/` folder with one `.svg` and one Shields endpoint `.json` per client (for example `badges/claude-code.svg`, `badges/standin.svg`). Real output of the built-in stand-in client against a published server, 2026-11-09:
+`--out ./proof` writes `compat.json`, `table.md` and a `badges/` folder with one `.svg` and one Shields endpoint `.json` per client (for example `badges/claude-code.svg`, `badges/standin.svg`). Example of the generated table (the handshake column is derived from the recorded methods):
 
 ```text
 Checked with mcp-proof 0.1.2 on 2026-11-09.
 
-| Client | Version | System | Result | Date |
-| --- | --- | --- | --- | --- |
-| mcp-proof stand-in client (stand-in, not a real product) | built-in | win32 x64, Node 24.20.0 | verified | 2026-11-09 |
+| Client | Version | System | Handshake | Result | Date |
+| --- | --- | --- | --- | --- | --- |
+| mcp-proof stand-in client (stand-in, not a real product) | built-in | win32 x64, Node 24.20.0 | initialize | verified | 2026-11-09 |
 ```
 
 ## 2. Paste it
