@@ -32,7 +32,7 @@ mcp-proof stand-in client  verified built-in
 
 ## Why
 
-"Works with Claude Code, Cursor, Codex" usually means "I tried it once on my machine" or "the documentation says so". The failures people hit are client specific: `npx` needs `cmd /c` on Windows, config keys differ between clients, a trust prompt leaves a server "Disabled". mcp-proof gives a claim a date, a client version, an operating system and the exact commands behind it, so a reader can tell what ran.
+"Works with Claude Code, Cursor, Codex" usually means "I tried it once on my machine" or "the documentation says so". The failures people hit are client specific: some clients cannot start a bare `npx` on Windows, config keys differ between clients, a trust prompt leaves a server "Disabled". mcp-proof gives a claim a date, a client version, an operating system and the exact commands behind it, so a reader can tell what ran.
 
 ## What the labels mean
 

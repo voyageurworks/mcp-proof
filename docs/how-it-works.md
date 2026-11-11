@@ -11,7 +11,7 @@
 
 ## The wrapper and Windows
 
-On Windows, npm-style commands (`npx`, `npm`, `pnpm`, `yarn`) and any bare command name are `.cmd` shims that Node cannot start directly, so mcp-proof runs them through `cmd /c`, the same thing a client must do. If the wrapped server exits, the wrapper exits too, so the client sees a disconnect and not a hang.
+On Windows, npm-style commands (`npx`, `npm`, `pnpm`, `yarn`) and any bare command name are `.cmd` shims that Node cannot start directly, so mcp-proof runs them through `cmd /c`. Some clients have to do the same; Claude Code 2.1.322 on Windows 11 started both a bare `npx` and `cmd /c npx` (checked 2026-11-11). If the wrapped server exits, the wrapper exits too, so the client sees a disconnect and not a hang.
 
 ## compat.json (schema 1)
 
