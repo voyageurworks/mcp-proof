@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { createInterface } from "node:readline/promises";
+import { ownPackage, ownPackageNote } from "./ownPackage.js";
 
 /**
  * `mcp-proof setup`: a guided first run. It asks (or takes flags for) which server to prove, which clients to try and where to put the
@@ -25,7 +26,8 @@ const USAGE = `Usage: mcp-proof setup [--server "<server command line>"] [--out 
   --ci      also print a GitHub Actions job
   --prompt  print a block to paste into an AI assistant that can run commands`;
 
-export type SetupChoice = { server: string; out: string; ci: boolean };
+/** ownPackage is set when the server command starts the package whose folder you are in (see ownPackage.ts). */
+export type SetupChoice = { server: string; out: string; ci: boolean; ownPackage?: string };
 
 /** Commands that download the server the first time they run, so the first client start can be slower than the client waits. */
 export const needsWarmUp = (server: string) => /^\s*(npx|pnpm\s+dlx|yarn\s+dlx|bunx|uvx|pipx\s+run)\b/.test(server);
@@ -47,11 +49,13 @@ const quote = (value: string) => (/[\s"']/.test(value) ? `"${value.replace(/\\/g
 /** Every step as text. Pure, so it can be tested for each choice. */
 export function setupSteps(choice: SetupChoice): string {
   const indent = (text: string) => text.split("\n").map((line) => `     ${line}`).join("\n");
-  const run = `npx -y ${PACKAGE} run --out ${quote(choice.out)} --server ${JSON.stringify(choice.server)}`;
+  const run = `npx -y ${PACKAGE} run --out ${quote(choice.out)} --server ${JSON.stringify(choice.server)}${choice.ownPackage ? " --cwd .." : ""}`;
+  const ownNote = choice.ownPackage ? ownPackageNote(choice.ownPackage).split(" Run again")[0]! : "";
   const steps: string[] = [];
   if (needsWarmUp(choice.server)) steps.push(`Warm up your server once, so its first download is already done (a cold download can take longer than a client waits, and the client then shows "failed"):\n${indent(`${choice.server} --help`)}\n   (any quick run of the server will do; stop it with Ctrl+C if it waits for input)`);
   steps.push(`See which clients are installed here (mcp-proof never installs one, and never reads your real client settings):\n${indent(`npx -y ${PACKAGE} clients`)}`);
-  steps.push(`Prove it. Each installed client starts in a throwaway home and is made to run your server:\n${indent(run)}\n   Exit code 0 = every client that ran was verified; 1 = one did not verify; 2 = a usage problem.`);
+  steps.push(`Prove it. Each installed client starts in a throwaway home and is made to run your server:\n${indent(run)}\n   Exit code 0 = every client that ran was verified; 1 = one did not verify; 2 = a usage problem.${choice.ownPackage ? `
+   --cwd .. starts your server from the parent folder. ${ownNote}` : ""}`);
   steps.push("Read the labels: verified = the client started your server and the log shows the handshake (initialize and initialized, or the newer server/discover) and tools/list; started = it started but tools/list did not follow; failed = it never completed the handshake; not-installed = nothing was run. Anything but verified comes with a note saying why.");
   steps.push(`Paste the evidence into your README: ${choice.out}/table.md is a ready table, ${choice.out}/badges/ holds badges and ${choice.out}/compat.json is the machine-readable record. Keep the date with it: a result only says what was true that day.`);
   if (choice.ci) steps.push(`Optional: refresh it in GitHub Actions. The job only finds clients you installed in an earlier step:\n${indent(ciJob(choice))}`);
@@ -81,7 +85,9 @@ export async function setupCommand(args: string[], io: SetupIo): Promise<0 | 2> 
   server ??= suggested;
   out ??= "proof";
   if (!server) return io.err('mcp-proof: say which server to prove: mcp-proof setup --server "npx -y my-mcp-server" (or run it in a folder with a package.json).\n'), 2;
-  io.out(`${setupSteps({ server, out, ci: args.includes("--ci") })}\n`);
+  const [command = "", ...rest] = server.trim().split(" ").filter(Boolean);
+  const own = ownPackage(command, rest, io.cwd);
+  io.out(`${setupSteps({ server, out, ci: args.includes("--ci"), ...(own ? { ownPackage: own } : {}) })}\n`);
   return 0;
 }
 
@@ -99,7 +105,7 @@ export function nextHints(labels: string[], options: { out?: string; server: str
   if (ran.length === 0) hints.push("No client was found on this computer, so nothing ran. Install one yourself (mcp-proof never installs a client); `mcp-proof clients` says which are supported and how.");
   if (has("verified")) hints.push(options.out ? `Paste ${options.out}/table.md into your README (and the badges from ${options.out}/badges/). The date is part of the evidence.` : "Add --out proof to write a README-ready table, badges and compat.json.");
   if (has("failed") || has("started")) {
-    hints.push("A client did not verify: the note under its line says why. If your server is started with npx or another downloader, run it once yourself first so the download is cached (a cold download can take longer than the client waits), then run again; --timeout 180 gives more time and --keep keeps the throwaway home to look at.");
+    hints.push("A client did not verify: the reasons are listed above under Why it did not verify. If your server is started with npx or another downloader, run it once yourself first so the download is cached (a cold download can take longer than the client waits), then run again; --timeout 180 gives more time and --keep keeps the throwaway home to look at.");
   }
   if (has("not-installed") && ran.length > 0) hints.push("Clients marked not-installed were not run; that is not a failure.");
   hints.push("First time? mcp-proof setup   (a guided walk-through)");

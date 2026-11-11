@@ -34,6 +34,14 @@ export function renderTable(record: CompatRecord): string {
   ].join("\n");
 }
 
+/** Why each result that ran but did not verify did not, one line per note, for the terminal (line breaks become spaces). */
+export function renderNotes(record: CompatRecord): string[] {
+  const oneLine = (text: string) => text.split(String.fromCharCode(13)).join("").split(String.fromCharCode(10)).join(" ");
+  return record.results
+    .filter(result => result.label !== "verified" && result.label !== "not-installed")
+    .flatMap(result => result.notes.map(note => `${result.clientName}: ${oneLine(note)}`));
+}
+
 /** Plain text for the terminal. */
 export function renderSummary(record: CompatRecord): string {
   const width = Math.max(...record.results.map(result => result.clientName.length), 6);

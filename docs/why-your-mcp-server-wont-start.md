@@ -8,6 +8,7 @@
 - **A different config shape per client.** The file name, the top-level key and the field names differ between clients, so a block that works in one is silently ignored in another. Copy the shape from that client's own documentation.
 - **A trust or approval prompt.** Some clients mark a server "Disabled" or untrusted until a person approves it. That is not a crash: nothing started, and a log will show no `initialize` and no answered `server/discover`.
 - **A cold `npx` cache.** The first run has to download your package, which can take longer than the client waits. A second run goes faster once the download is cached. mcp-proof waits up to 90 seconds by default (`--timeout`) so a first download is fine up to that.
+- **Running it inside your own package's folder.** In a package's own folder, `npx -y your-package` runs the copy in that folder (usually not installed or built), not the published package, and the client shows `'your-package' is not recognized`. mcp-proof says so when it happens; run it with `--cwd ..` so the server starts from the parent folder.
 - **The server exits early.** If the process dies, the client sees a disconnect. mcp-proof's wrapper makes this visible as `failed` instead of a hang.
 
 ## Find out which one you have

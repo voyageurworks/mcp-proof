@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { badgeSvg, renderBadges, slug } from "./badge.js";
 import { sample } from "./compat.test.js";
-import { renderSummary, renderTable } from "./table.js";
+import { renderNotes, renderSummary, renderTable } from "./table.js";
 
 describe("renderTable", () => {
   it("shows each client, explains each label used, and says stand-ins are not products", () => {
@@ -36,6 +36,23 @@ describe("renderTable with a hostile compat.json", () => {
     expect(table).toContain("&lt;script&gt;");
     expect(table.split("\n").filter(line => line.startsWith("| injected"))).toEqual([]);
     expect(table.split("\n").filter(line => line.startsWith("- fake bullet"))).toEqual([]);
+  });
+});
+
+describe("renderNotes: why a result did not verify, for the terminal", () => {
+  it("lists the notes of results that did not verify, one line each, with the client name", () => {
+    const record = sample();
+    record.results[0]!.label = "failed";
+    record.results[0]!.notes = ["The server exited at once." + String.fromCharCode(10) + "Check the command.", "A second note."];
+    expect(renderNotes(record)).toEqual(["Claude Code: The server exited at once. Check the command.", "Claude Code: A second note."]);
+  });
+  it("says nothing for a verified result, even one with notes, and nothing for not-installed", () => {
+    const record = sample();
+    record.results[0]!.label = "verified";
+    record.results[0]!.notes = ["Files in your real home folder changed."];
+    expect(renderNotes(record)).toEqual([]);
+    record.results[0]!.label = "not-installed";
+    expect(renderNotes(record)).toEqual([]);
   });
 });
 

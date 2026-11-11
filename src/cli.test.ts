@@ -86,6 +86,20 @@ describe("run, table, badge and validate", () => {
     expect(c.text().out).toContain("failed");
   });
 
+  it("says why on the error stream when a result does not verify, and keeps stdout exactly the summary", async () => {
+    const c = capture();
+    await main(["run", "--client", "standin", "--scratch", temp(), "--timeout", "10", "--env", "ECHO_SERVER_MODE=exit-early", "--", process.execPath, FIXTURE], c.io, {});
+    const { out, err } = c.text();
+    expect(out.trim().split(String.fromCharCode(10))).toHaveLength(1);
+    expect(err).toMatch(/Why it did not verify/);
+    expect(err).toMatch(/mcp-proof stand-in client: .*(exited|answering)/);
+  });
+  it("prints no reason block for a verified run", async () => {
+    const c = capture();
+    await main(["run", "--client", "standin", "--scratch", temp(), "--", process.execPath, FIXTURE], c.io, {});
+    expect(c.text().err).not.toMatch(/Why it did not verify/);
+  });
+
   it("copies a named variable from the environment passed in", async () => {
     const c = capture();
     const code = await main(["run", "--client", "standin", "--scratch", temp(), "--json", "--env", "ECHO_SERVER_MODE", "--", process.execPath, FIXTURE], c.io, { ECHO_SERVER_MODE: "no-tools" });

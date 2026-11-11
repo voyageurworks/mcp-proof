@@ -8,7 +8,7 @@ import { parseLaunch, type Launch } from "./launch.js";
 import { RECIPES, recipeById } from "./recipes/index.js";
 import { runAll, VERSION } from "./run.js";
 import { nextHints, setupCommand, terminalAsk } from "./setup.js";
-import { renderSummary, renderTable } from "./table.js";
+import { renderNotes, renderSummary, renderTable } from "./table.js";
 import { wrap } from "./wrap.js";
 
 export interface Io { out(text: string): void; err(text: string): void }
@@ -170,6 +170,8 @@ export async function main(argv: string[], io: Io, environment: NodeJS.ProcessEn
     const record = await runAll({ server: args.server, recipes, serverEnv: args.env, timeoutMs: args.timeoutSec * 1000, scratchRoot: args.scratch, serverCwd: path.resolve(args.cwd ?? process.cwd()), keep: args.keep, onProgress: message => io.err(`${message}\n`) });
     if (args.out) writeOutputs(args.out, record);
     io.out(args.json ? `${JSON.stringify(record, null, 2)}\n` : renderSummary(record));
+    const why = renderNotes(record);
+    if (!args.json && why.length > 0) io.err(["", "Why it did not verify:", ...why.map(line => `  ${line}`), ""].join(String.fromCharCode(10)));
     if (!args.json) io.err(`\n${nextHints(record.results.map(result => result.label), { out: args.out, server: args.server.command }).map(line => `- ${line}`).join("\n")}\n`);
     const ran = record.results.filter(result => result.label !== "not-installed");
     const named = new Set(args.clients);

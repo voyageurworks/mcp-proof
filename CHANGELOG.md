@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.5 (2026-11-11)
+
+Two first-run fixes found by running mcp-proof on handoff-desk's own repository. The labels, `compat.json` (schema 1), exit codes and `--json` are unchanged.
+
+- **The reason is now on the screen.** After a result that ran but did not verify, the terminal prints "Why it did not verify" with each note, on the error stream (stdout is still exactly the summary; `--json` is unchanged). Until now the notes were only in `table.md` and `compat.json` (so only with `--out`), although the hint said "the note under its line says why". The hint now points at the new block.
+- **Running inside the package's own folder.** In a package's own folder, `npx -y <that package>` does not fetch the published package: npm sees that the project has that name and runs the copy in the folder, which is usually not installed or built, so the client shows `'name' is not recognized` and the result is `failed`. `setup` suggests exactly that command from the `package.json` beside you. Now `setup` adds `--cwd ..` to the run step and says why, and a `run` that did not verify in such a folder adds a note saying the same and how to fix it (`--cwd ..`, which starts the server from the parent folder). Checked with Claude Code 2.1.322 on Windows 11 in the handoff-desk repository: `failed` before, with the note now; `--cwd ..` gives `verified`. Detection reads only the name in the nearest `package.json`, and stays quiet for `npx -p`, a different package or any other command.
+- Tests: `src/ownPackage.test.ts` (which package a command starts, folder and subfolder detection, `setup` output) and two terminal-output tests in `src/render.test.ts` and `src/cli.test.ts`.
+
 ## 0.1.4 (2026-11-11)
 
 Fixes a wrong `failed`: a server that works could be labelled `failed` by a newer client. The labels' names, `compat.json` (schema 1), the exit codes and `--json` are unchanged.
