@@ -61,15 +61,21 @@ export function parseLog(text: string): LogEntry[] {
   return entries;
 }
 
-export type Handshake = { initialize: boolean; initialized: boolean; toolsList: boolean; toolsListAnswered: boolean; methods: string[] };
+export type Handshake = { initialize: boolean; discover: boolean; initialized: boolean; toolsList: boolean; toolsListAnswered: boolean; methods: string[] };
 
-/** What the log proves. A request counts as answered only when the server sent a non-error response with the same id. */
+/**
+ * What the log proves. A request counts as answered only when the server sent a non-error response with the same id.
+ * `discover` is the newer handshake: a client that sends `server/discover` and gets a non-error answer does not send `initialize`
+ * (seen from Claude Code 2.1.322 against a server that supports it). A server that answers it with an error is not counted,
+ * and the client then falls back to `initialize`.
+ */
 export function summarize(entries: LogEntry[]): Handshake {
   const requests = (method: string) => entries.filter(entry => entry.direction === "client-to-server" && entry.kind === "request" && entry.method === method);
   const answered = (method: string) => requests(method).some(request => request.id !== undefined && entries.some(entry => entry.direction === "server-to-client" && entry.kind === "response" && entry.id === request.id));
   const methods = [...new Set(entries.filter(entry => entry.method).map(entry => entry.method!))];
   return {
     initialize: answered("initialize"),
+    discover: answered("server/discover"),
     initialized: entries.some(entry => entry.direction === "client-to-server" && entry.kind === "notification" && entry.method === "notifications/initialized"),
     toolsList: requests("tools/list").length > 0,
     toolsListAnswered: answered("tools/list"),

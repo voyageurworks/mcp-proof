@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.4 (2026-11-11)
+
+Fixes a wrong `failed`: a server that works could be labelled `failed` by a newer client. The labels' names, `compat.json` (schema 1), the exit codes and `--json` are unchanged.
+
+- **The newer handshake counts.** Claude Code 2.1.322 starts with `server/discover`. A server that supports it answers, and the client then goes straight to `tools/list` and never sends `initialize`, so mcp-proof 0.1.3 labelled it `failed` ("initialize was never answered") although the log showed the server answering both requests. `verified` now means: the handshake was answered without error (`initialize` with `notifications/initialized` sent, **or** `server/discover`) and `tools/list` was answered without error. `started` means the handshake was answered but `tools/list` was not. A server that answers `server/discover` with an error is not counted, and the client then falls back to `initialize`, as before. The notes, `setup` text and docs use the same words.
+- Checked on 2026-11-11 with Claude Code 2.1.322 on Windows 11, run from this build: `@modelcontextprotocol/server-everything` 2.2.1 (answers `server/discover`) went from `failed` with 0.1.3 to `verified`; `@voyageurworks/handoff-desk` 1.2.4 (answers it with an error, then `initialize`) is still `verified`. macOS was not run for this change by hand; the CI workflow runs it.
+- Tests: `src/evidence.test.ts` covers both handshakes, an errored `server/discover`, `tools/list` unanswered and an empty log.
+
 ## 0.1.3 (2026-11-09)
 
 First-run polish; the labels, `compat.json`, exit codes and `--json` output are unchanged.

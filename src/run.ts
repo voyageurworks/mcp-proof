@@ -81,9 +81,9 @@ export async function runAll(options: RunOptions): Promise<CompatRecord> {
     if (label === "failed" && notes.length === 0) {
       notes.push(handshake.methods.length === 0
         ? "The client never reached the server: nothing was exchanged. Check that the server command works on its own, and whether the client asked for approval."
-        : "The client reached the server command, but initialize was never answered. The server may have exited at once; check that the command works on its own.");
+        : "The client reached the server command, but the handshake (initialize or server/discover) was never answered. The server may have exited at once; check that the command works on its own.");
     }
-    if (label === "started" && notes.length === 0) notes.push("The server answered initialize, but tools/list was not answered.");
+    if (label === "started" && notes.length === 0) notes.push("The server answered the handshake (initialize or server/discover), but tools/list was not answered.");
     if (realHomeState === "changed") notes.push("Files in your real home folder for this client changed during the run. mcp-proof only writes inside its throwaway home, so a copy of this client that was already running is the likely cause.");
     results.push({
       client: recipe.id, clientName: recipe.name, standin: !!recipe.standin, clientVersion: found.version ?? null,

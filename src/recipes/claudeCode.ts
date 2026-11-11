@@ -26,7 +26,9 @@ export function addArguments(context: Pick<RunContext, "serverEnv" | "wrapped">)
  * Claude Code, driven by its own commands in a throwaway home: `claude mcp add` writes the server entry into the throwaway
  * config, then `claude mcp list` runs Claude Code's health check, which starts the server through mcp-proof's wrapper.
  * Checked 2026-11-03 with Claude Code 2.1.317 on Windows 11: the health check sent initialize, notifications/initialized and
- * tools/list. No login is needed. Other versions and systems are labelled by what the log shows, not assumed.
+ * tools/list. Claude Code 2.1.322 (2026-11-11) first sends server/discover; a server that answers it gets tools/list straight after and no
+ * initialize, while one that answers with an error gets initialize next (labelFor counts both). No login is needed. Other versions and
+ * systems are labelled by what the log shows, not assumed.
  */
 export const claudeCode: Recipe = {
   id: "claude-code",
