@@ -6,7 +6,7 @@ Please report a vulnerability privately, not in a public issue. Use GitHub's pri
 
 ## What mcp-proof promises
 
-- It writes method names, directions, kinds and integer ids to its log. It does not write parameters, results, tool names, tool output or environment values.
+- It writes method names, directions, kinds and small pairing integers (not the ids a client chose) to its log. It does not write parameters, results, tool names, tool output or environment values.
 - It builds a client's environment from an allow-list and drops anything that looks like a credential.
 - It runs clients only inside a throwaway home folder it creates, and it never installs software.
 - It makes no network calls of its own and has no telemetry.

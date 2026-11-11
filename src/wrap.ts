@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { appendFileSync } from "node:fs";
-import { LineLogger, type LogEntry } from "./log.js";
+import { IdMap, LineLogger, type LogEntry } from "./log.js";
 import { platformLaunch, type Launch } from "./launch.js";
 
 /**
@@ -11,8 +11,9 @@ import { platformLaunch, type Launch } from "./launch.js";
 export function wrap(logFile: string, launch: Launch, cwd?: string): Promise<number> {
   const real = platformLaunch(launch);
   const record = (entry: LogEntry) => appendFileSync(logFile, `${JSON.stringify({ t: Date.now(), ...entry })}\n`);
-  const fromClient = new LineLogger("client-to-server", record);
-  const fromServer = new LineLogger("server-to-client", record);
+  const ids = new IdMap();
+  const fromClient = new LineLogger("client-to-server", record, ids);
+  const fromServer = new LineLogger("server-to-client", record, ids);
   return new Promise(resolve => {
     const child = spawn(real.command, real.args, { stdio: ["pipe", "pipe", "inherit"], windowsHide: true, windowsVerbatimArguments: real.verbatim === true, ...(cwd ? { cwd } : {}) });
     child.on("error", error => { process.stdin.destroy(); process.stderr.write(`mcp-proof: could not start the server: ${(error as NodeJS.ErrnoException).code ?? "error"}\n`); resolve(127); });

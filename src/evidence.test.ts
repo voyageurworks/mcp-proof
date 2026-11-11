@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { labelFor } from "./evidence.js";
-import { parseLog, summarize } from "./log.js";
+import { IdMap, LineLogger, parseLog, summarize, type Direction, type LogEntry } from "./log.js";
 
 const log = (lines: object[]) => parseLog(lines.map(line => JSON.stringify(line)).join("\n"));
 
@@ -48,5 +48,61 @@ describe("labelFor", () => {
   });
   it("is started, not verified, when only initialize was answered", () => {
     expect(labelFor(summarize(log(fallbackFlow.slice(0, 4))))).toBe("started");
+  });
+});
+
+// Claude Code 2.1.322 opens with server/discover under an id that is not a plain integer (the log must not keep it).
+describe("ids that are not plain integers", () => {
+  const through = (lines: Array<[Direction, object]>) => {
+    const out: LogEntry[] = [];
+    const ids = new IdMap();
+    const loggers = { "client-to-server": new LineLogger("client-to-server", entry => out.push(entry), ids), "server-to-client": new LineLogger("server-to-client", entry => out.push(entry), ids) };
+    for (const [direction, message] of lines) loggers[direction].push(JSON.stringify(message) + "\n");
+    return out;
+  };
+  const SECRET_ID = "tok-FAKE-" + "z".repeat(16);
+
+  it("matches an answer to a request whose id is a string, and never writes the string", () => {
+    const entries = through([
+      ["client-to-server", { jsonrpc: "2.0", id: SECRET_ID, method: "server/discover" }],
+      ["server-to-client", { jsonrpc: "2.0", id: SECRET_ID, result: { name: "x" } }],
+      ["client-to-server", { jsonrpc: "2.0", id: 7, method: "tools/list" }],
+      ["server-to-client", { jsonrpc: "2.0", id: 7, result: { tools: [] } }],
+    ]);
+    expect(JSON.stringify(entries)).not.toContain(SECRET_ID);
+    const handshake = summarize(entries);
+    expect(handshake).toMatchObject({ discover: true, toolsListAnswered: true });
+    expect(labelFor(handshake)).toBe("verified");
+  });
+  it("does not let a server request with the same id answer a client request", () => {
+    const entries = through([
+      ["client-to-server", { jsonrpc: "2.0", id: 0, method: "tools/list" }],
+      ["server-to-client", { jsonrpc: "2.0", id: 0, method: "ping" }],
+      ["client-to-server", { jsonrpc: "2.0", id: 0, result: {} }],
+    ]);
+    expect(summarize(entries).toolsListAnswered).toBe(false);
+  });
+  it("does not let an old answer count for a later request that reuses the id", () => {
+    const entries = through([
+      ["client-to-server", { jsonrpc: "2.0", id: "a", method: "initialize" }],
+      ["server-to-client", { jsonrpc: "2.0", id: "a", result: {} }],
+      ["client-to-server", { jsonrpc: "2.0", id: "a", method: "tools/list" }],
+    ]);
+    expect(summarize(entries)).toMatchObject({ initialize: true, toolsListAnswered: false });
+  });
+  it("ignores an answer with an id nobody asked for, and a null id", () => {
+    const entries = through([
+      ["client-to-server", { jsonrpc: "2.0", id: 1, method: "tools/list" }],
+      ["server-to-client", { jsonrpc: "2.0", id: 99, result: {} }],
+      ["server-to-client", { jsonrpc: "2.0", id: null, error: { code: -32700 } }],
+    ]);
+    expect(summarize(entries).toolsListAnswered).toBe(false);
+  });
+  it("counts an error answer as not answered", () => {
+    const entries = through([
+      ["client-to-server", { jsonrpc: "2.0", id: "q", method: "server/discover" }],
+      ["server-to-client", { jsonrpc: "2.0", id: "q", error: { code: -32601, message: "Method not found" } }],
+    ]);
+    expect(summarize(entries).discover).toBe(false);
   });
 });
