@@ -51,7 +51,11 @@ describe("mcp-proof wrap", () => {
     const log = path.join(mkdtempSync(path.join(process.env.MCP_PROOF_TEST_TMP ?? os.tmpdir(), "mcp-proof-wrap-")), "proof.log");
     const result = await runWrapper(log, "", [path.join(ROOT, "no-such-program.exe")]);
     expect(result.code).toBe(127);
-    expect(existsSync(log)).toBe(false);
+    // Only one short fact is written (what kind of start error), never a message: so the result can say "not found".
+    expect(existsSync(log)).toBe(true);
+    const lines = readFileSync(log, "utf8").trim().split("\n");
+    expect(lines).toHaveLength(1);
+    expect(JSON.parse(lines[0]!)).toMatchObject({ process: "spawn-error", code: "ENOENT" });
   });
 
   it("returns the server's exit code", async () => {

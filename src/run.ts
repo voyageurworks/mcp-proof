@@ -9,6 +9,7 @@ import type { Launch } from "./launch.js";
 import { parseLog, summarize } from "./log.js";
 import { killAllChildren } from "./proc.js";
 import { ownPackage, ownPackageNote } from "./ownPackage.js";
+import { explainFailure, parseProcess } from "./why.js";
 import { redactArgs, scrubPaths } from "./redact.js";
 import type { Recipe, RunResult } from "./types.js";
 
@@ -73,17 +74,14 @@ export async function runAll(options: RunOptions): Promise<CompatRecord> {
     const run: RunResult = await recipe.run({ home, workDir, wrapped, logFile, serverEnv: options.serverEnv, timeoutMs: options.timeoutMs })
       .catch((error: NodeJS.ErrnoException) => ({ commands: [], exitCode: null, timedOut: false, notes: [`The recipe failed to run: ${error.code ?? "error"}`] }));
     const after = before === null ? null : snapshot(realHome(), recipe.realHomePaths);
-    const handshake = summarize(existsSync(logFile) ? parseLog(readFileSync(logFile, "utf8")) : []);
+    const logText = existsSync(logFile) ? readFileSync(logFile, "utf8") : "";
+    const handshake = summarize(parseLog(logText));
     const scrub = (text: string) => scrubPaths(text, [[home.root, "<home>"], [options.self ?? SELF, "<mcp-proof>"], [process.execPath, "node"], ...Object.values(options.serverEnv).filter(value => value.length >= 3).map((value): [string, string] => [value, "<env value>"])]);
     const realHomeState = before === null || after === null ? "unknown" : compareSnapshots(before, after);
     const notes = run.notes.map(scrub);
     const label = labelFor(handshake);
     // A result that is not verified must say, in plain words, where it stopped.
-    if (label === "failed" && notes.length === 0) {
-      notes.push(handshake.methods.length === 0
-        ? "The client never reached the server: nothing was exchanged. Check that the server command works on its own, and whether the client asked for approval."
-        : "The client reached the server command, but the handshake (initialize or server/discover) was never answered. The server may have exited at once; check that the command works on its own.");
-    }
+    if (label === "failed" && notes.length === 0) notes.push(explainFailure({ methods: handshake.methods, process: parseProcess(logText) }));
     // The command line from setup fails in the package folder itself (npx runs the local copy); say so.
     const own = label === "verified" ? undefined : ownPackage(options.server.command, options.server.args, options.serverCwd ?? process.cwd());
     if (own) notes.push(ownPackageNote(own));

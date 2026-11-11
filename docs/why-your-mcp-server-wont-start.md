@@ -39,7 +39,7 @@ It starts each client it finds in a throwaway home, makes the client run your se
 | `failed` | The server never completed the handshake, or the client could not be driven. |
 | `not-installed` | The client is not on this machine, so nothing was run. |
 
-The log keeps method names only, never parameters or tool output, so you can paste it into an issue or show it to an AI assistant. mcp-proof never installs a client and never touches your real client settings.
+The log keeps method names (and the process facts: could it start, its exit code, how long it ran), never parameters or tool output, so you can paste it into an issue or show it to an AI assistant. mcp-proof never installs a client and never touches your real client settings.
 
 ## Then show the result
 
