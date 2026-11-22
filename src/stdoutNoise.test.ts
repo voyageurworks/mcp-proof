@@ -28,6 +28,27 @@ describe("LineLogger counts lines that are not protocol messages", () => {
     expect(run(["half a banner"]).noise).toBe(1);
     expect(run(["half a banner"], false).noise).toBe(0);
   });
+  it("does not count a JSON-RPC batch array, CRLF line ends or a BOM before the first message", () => {
+    const rpc = JSON.stringify({ jsonrpc: "2.0", id: 1, result: {} });
+    expect(run([`[${rpc},${rpc}]\n`]).noise).toBe(0);
+    expect(run([`${rpc}\r\n`, "﻿" + rpc + "\n"]).noise).toBe(0);
+  });
+  it("does not count the tail of an oversized line that was dropped, and keeps counting after it", () => {
+    const logger = new LineLogger("server-to-client", () => {});
+    logger.push("x".repeat(4_000_001));
+    logger.push("tail of the same huge line\n");
+    expect(logger.noiseLines).toBe(0);
+    logger.push("a real banner\n");
+    expect(logger.noiseLines).toBe(1);
+  });
+  it("calls onFirstNoise once, at the first noise line", () => {
+    const logger = new LineLogger("server-to-client", () => {});
+    let calls = 0;
+    logger.onFirstNoise = () => { calls += 1; };
+    logger.push("one\ntwo\nthree\n");
+    expect(calls).toBe(1);
+    expect(logger.noiseLines).toBe(3);
+  });
   it("keeps no text of the noise", () => {
     const secret = "sk-FAKE-" + "y".repeat(20);
     const { entries } = run([`token ${secret}\n`]);
