@@ -64,6 +64,8 @@ export function entryFromLine(direction: Direction, line: string, ids?: IdMap): 
 /** Splits a byte stream into lines and turns each into a LogEntry. Keeps no message text beyond the current partial line. */
 export class LineLogger {
   private rest = "";
+  /** Count of non-empty lines that do not start with "{" (a banner or log line on a protocol stream). Only the count is kept, never the text. */
+  noiseLines = 0;
   constructor(private readonly direction: Direction, private readonly write: (entry: LogEntry) => void, private readonly ids?: IdMap) {}
   push(chunk: Buffer | string): void {
     this.rest += chunk.toString("utf8");
@@ -71,12 +73,15 @@ export class LineLogger {
     if (this.rest.length > 4_000_000 && !this.rest.includes("\n")) this.rest = "";
     let at: number;
     while ((at = this.rest.indexOf("\n")) >= 0) {
-      const entry = entryFromLine(this.direction, this.rest.slice(0, at), this.ids);
+      const line = this.rest.slice(0, at);
+      if (line.trim() !== "" && !line.trim().startsWith("{")) this.noiseLines += 1;
+      const entry = entryFromLine(this.direction, line, this.ids);
       this.rest = this.rest.slice(at + 1);
       if (entry) this.write(entry);
     }
   }
   end(): void {
+    if (this.rest.trim() !== "" && !this.rest.trim().startsWith("{")) this.noiseLines += 1;
     const entry = entryFromLine(this.direction, this.rest, this.ids);
     this.rest = "";
     if (entry) this.write(entry);

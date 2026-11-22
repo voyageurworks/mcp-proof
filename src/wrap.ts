@@ -26,7 +26,7 @@ export function wrap(logFile: string, launch: Launch, cwd?: string): Promise<num
     process.stdin.on("end", () => { clientClosed = true; fromClient.end(); child.stdin.end(); });
     child.stdin.on("error", () => { /* the server closed its input first */ });
     child.stdout.on("data", chunk => { fromServer.push(chunk); process.stdout.write(chunk); });
-    child.stdout.on("end", () => fromServer.end());
+    child.stdout.on("end", () => { fromServer.end(); if (fromServer.noiseLines > 0) processFact({ process: "stdout-noise", lines: fromServer.noiseLines }); });
     // When the server is gone the wrapper must end too, so the client sees a disconnect instead of a hang.
     child.on("close", code => { if (typeof code === "number" && !spawnFailed) processFact({ process: "exit", code, afterMs: Date.now() - startedAt, clientClosed }); process.stdin.destroy(); resolve(code ?? 0); });
     for (const signal of ["SIGINT", "SIGTERM"] as const) process.on(signal, () => child.kill());
