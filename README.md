@@ -76,6 +76,37 @@ Options for `run`: `--client <id>` (repeatable; default every client), `--env NA
 
 Exit codes: `0` every client that ran was verified (and at least one ran), `1` a client ran but did not verify or a client you named is missing, `2` a usage problem.
 
+### JSON output
+
+`--json` prints the same record that `--out` writes to `compat.json`, on standard output, and the progress lines still go to standard error. Real output, trimmed to the parts a script can rely on. It was run on 2026-11-22 with mcp-proof 0.1.6, Claude Code 2.1.330, Windows 11 (win32 x64) and Node 24.20.0, against the published `@modelcontextprotocol/server-everything`:
+
+```json
+{
+  "schema": 1,
+  "tool": "mcp-proof",
+  "version": "0.1.6",
+  "generatedAt": "2026-11-22T04:49:07.895Z",
+  "system": { "os": "win32", "arch": "x64", "release": "10.0.26300", "node": "v24.20.0" },
+  "server": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-everything"], "envNames": [] },
+  "results": [
+    {
+      "client": "claude-code", "clientName": "Claude Code", "standin": false, "clientVersion": "2.1.330",
+      "label": "verified",
+      "methods": ["server/discover", "initialize", "notifications/initialized", "notifications/tools/list_changed", "tools/list"],
+      "realHome": "unchanged", "notes": []
+    },
+    {
+      "client": "standin", "clientName": "mcp-proof stand-in client", "standin": true, "clientVersion": "built-in",
+      "label": "verified",
+      "methods": ["initialize", "notifications/initialized", "tools/list"],
+      "realHome": "unknown", "notes": []
+    }
+  ]
+}
+```
+
+A CI script can rely on `schema` (a whole number, currently `1`), `results[].client`, `results[].label` (`verified`, `started`, `failed` or `not-installed`), `results[].standin` and `results[].notes` (plain-language reasons when a result is not verified). `commands`, `startedAt`, `durationMs` and the other fields are also in the file; see [how it works](docs/how-it-works.md) for the whole schema. The process exit code is the simplest gate: `0` only when every client that ran verified.
+
 ### In GitHub Actions
 
 ```yaml
