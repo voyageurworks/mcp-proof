@@ -9,7 +9,7 @@ import type { Launch } from "./launch.js";
 import { parseLog, summarize } from "./log.js";
 import { killAllChildren } from "./proc.js";
 import { ownPackage, ownPackageNote } from "./ownPackage.js";
-import { explainFailure, parseProcess } from "./why.js";
+import { explainFailure, parseProcess, stdoutNoiseNote } from "./why.js";
 import { redactArgs, scrubPaths } from "./redact.js";
 import type { Recipe, RunResult } from "./types.js";
 
@@ -85,6 +85,8 @@ export async function runAll(options: RunOptions): Promise<CompatRecord> {
     // The command line from setup fails in the package folder itself (npx runs the local copy); say so.
     const own = label === "verified" ? undefined : ownPackage(options.server.command, options.server.args, options.serverCwd ?? process.cwd());
     if (own) notes.push(ownPackageNote(own));
+    const noise = parseProcess(logText).stdoutNoiseLines;
+    if (noise) notes.push(stdoutNoiseNote(noise));
     if (label === "started" && notes.length === 0) notes.push("The server answered the handshake (initialize or server/discover), but tools/list was not answered.");
     if (realHomeState === "changed") notes.push("Files in your real home folder for this client changed during the run. mcp-proof only writes inside its throwaway home, so a copy of this client that was already running is the likely cause.");
     results.push({
