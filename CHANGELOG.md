@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **A server that writes banners or log lines to stdout is now flagged.** The wrapper counts the lines on the server's stdout that are not JSON-RPC messages and records only that count (never the text). `run` adds a note to the result, even when the handshake verified, because some clients treat such a line as a broken connection ("Unexpected token"). The note says logs belong on stderr.
+
 ## 0.1.6 (2026-11-11)
 
 A failure now says which kind it was, the table shows which handshake each client used (a first outside contribution), and there is a Claude Code plugin. Labels, `compat.json` (schema 1), exit codes and `--json` are unchanged.
