@@ -64,20 +64,36 @@ export function entryFromLine(direction: Direction, line: string, ids?: IdMap): 
 /** Splits a byte stream into lines and turns each into a LogEntry. Keeps no message text beyond the current partial line. */
 export class LineLogger {
   private rest = "";
+  /** Count of non-empty lines that do not start with "{" or "[" (a banner or log line on a protocol stream). Only the count is kept, never the text. */
+  noiseLines = 0;
+  /** Called once, when the first such line is seen, so a caller can record it before the stream ends (a killed process never reaches end()). */
+  onFirstNoise?: () => void;
+  /** True after an oversized partial line was dropped: the rest of that line is skipped, not classified. */
+  private discarding = false;
   constructor(private readonly direction: Direction, private readonly write: (entry: LogEntry) => void, private readonly ids?: IdMap) {}
+  private classify(line: string): void {
+    const text = line.trim();
+    if (text === "" || text.startsWith("{") || text.startsWith("[")) return;
+    this.noiseLines += 1;
+    if (this.noiseLines === 1) this.onFirstNoise?.();
+  }
   push(chunk: Buffer | string): void {
     this.rest += chunk.toString("utf8");
     // A single unterminated line longer than this is not a message we care about; drop it rather than grow without bound.
-    if (this.rest.length > 4_000_000 && !this.rest.includes("\n")) this.rest = "";
+    if (this.rest.length > 4_000_000 && !this.rest.includes("\n")) { this.rest = ""; this.discarding = true; }
     let at: number;
     while ((at = this.rest.indexOf("\n")) >= 0) {
-      const entry = entryFromLine(this.direction, this.rest.slice(0, at), this.ids);
+      const line = this.rest.slice(0, at);
       this.rest = this.rest.slice(at + 1);
+      if (this.discarding) { this.discarding = false; continue; }
+      this.classify(line);
+      const entry = entryFromLine(this.direction, line, this.ids);
       if (entry) this.write(entry);
     }
   }
   end(): void {
-    const entry = entryFromLine(this.direction, this.rest, this.ids);
+    if (!this.discarding) this.classify(this.rest);
+    const entry = this.discarding ? undefined : entryFromLine(this.direction, this.rest, this.ids);
     this.rest = "";
     if (entry) this.write(entry);
   }

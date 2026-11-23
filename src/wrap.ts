@@ -19,6 +19,8 @@ export function wrap(logFile: string, launch: Launch, cwd?: string): Promise<num
   const ids = new IdMap();
   const fromClient = new LineLogger("client-to-server", record, ids);
   const fromServer = new LineLogger("server-to-client", record, ids);
+  // Record the first non-protocol line at once: a wrapper that is killed (timeout, interrupt) never sees the stream end. The last fact wins when the log is read.
+  fromServer.onFirstNoise = () => processFact({ process: "stdout-noise", lines: 1 });
   return new Promise(resolve => {
     const child = spawn(real.command, real.args, { stdio: ["pipe", "pipe", "inherit"], windowsHide: true, windowsVerbatimArguments: real.verbatim === true, ...(cwd ? { cwd } : {}) });
     child.on("error", error => { spawnFailed = true; const code = (error as NodeJS.ErrnoException).code; if (typeof code === "string" && /^[A-Z][A-Z0-9_]{1,20}$/.test(code)) processFact({ process: "spawn-error", code }); process.stdin.destroy(); process.stderr.write(`mcp-proof: could not start the server: ${(error as NodeJS.ErrnoException).code ?? "error"}\n`); resolve(127); });
@@ -26,7 +28,7 @@ export function wrap(logFile: string, launch: Launch, cwd?: string): Promise<num
     process.stdin.on("end", () => { clientClosed = true; fromClient.end(); child.stdin.end(); });
     child.stdin.on("error", () => { /* the server closed its input first */ });
     child.stdout.on("data", chunk => { fromServer.push(chunk); process.stdout.write(chunk); });
-    child.stdout.on("end", () => fromServer.end());
+    child.stdout.on("end", () => { fromServer.end(); if (fromServer.noiseLines > 0) processFact({ process: "stdout-noise", lines: fromServer.noiseLines }); });
     // When the server is gone the wrapper must end too, so the client sees a disconnect instead of a hang.
     child.on("close", code => { if (typeof code === "number" && !spawnFailed) processFact({ process: "exit", code, afterMs: Date.now() - startedAt, clientClosed }); process.stdin.destroy(); resolve(code ?? 0); });
     for (const signal of ["SIGINT", "SIGTERM"] as const) process.on(signal, () => child.kill());

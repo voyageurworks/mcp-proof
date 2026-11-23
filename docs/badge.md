@@ -39,6 +39,10 @@ Keep the date and client version that mcp-proof wrote. They are the point: a rea
 
 The Action never installs a client, so install the clients you want checked in an earlier step. It also adds the table to the job summary. The inputs are `server`, `clients`, `env`, `out`, `timeout`, `version` and `package` (see `action.yml`).
 
+## On Windows PowerShell
+
+Step 1 was run in Windows PowerShell 5.1 on Windows 11 (2026-11-22, mcp-proof 0.1.6, Claude Code 2.1.330, against `npx -y @modelcontextprotocol/server-everything`) with the command as above; nothing needed different quoting, and `--out ./proof` wrote `compat.json`, `table.md` and `badges/` (`claude-code.svg`, `standin.svg` and their `.json` files) as described. Step 2 is copying a file, so it has no shell difference. The one difference: mcp-proof prints its progress lines on standard error, and Windows PowerShell 5.1 turns anything on standard error into a red `NativeCommandError` block when you add `2>&1` to the command. The run still succeeded (the exit code in `$LASTEXITCODE` was `0` and the files were written), so leave `2>&1` off, or ignore the red text. Step 3 (the GitHub Action) runs on a Linux runner and is not affected. Windows PowerShell 7 and `cmd` were not tried.
+
 ## What the labels mean
 
 `verified` is the handshake plus `tools/list`; `started`, `failed` and `not-installed` are described in the [README](../README.md#what-the-labels-mean). `verified` does not call a tool or test what it returns, so word your claim that way.

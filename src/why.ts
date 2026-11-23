@@ -5,7 +5,7 @@
  * kept running but never answered the handshake.
  */
 export type ExitRecord = { code: number; afterMs: number; clientClosed: boolean };
-export type ProcessSeen = { spawnError?: string; exit?: ExitRecord };
+export type ProcessSeen = { spawnError?: string; exit?: ExitRecord; stdoutNoiseLines?: number };
 
 /** The start error and exit the wrapper saw, from the proof log text. Only a short errno-like word, whole numbers and a flag are kept. */
 export function parseProcess(text: string): ProcessSeen {
@@ -16,11 +16,18 @@ export function parseProcess(text: string): ProcessSeen {
     try { value = JSON.parse(line) as Record<string, unknown>; } catch { continue; }
     if (value.process === "spawn-error" && typeof value.code === "string" && /^[A-Z][A-Z0-9_]{1,20}$/.test(value.code)) {
       seen.spawnError = value.code;
+    } else if (value.process === "stdout-noise" && Number.isInteger(value.lines) && (value.lines as number) > 0) {
+      seen.stdoutNoiseLines = value.lines as number;
     } else if (value.process === "exit" && Number.isInteger(value.code) && Number.isFinite(value.afterMs) && typeof value.clientClosed === "boolean") {
       seen.exit = { code: value.code as number, afterMs: value.afterMs as number, clientClosed: value.clientClosed };
     }
   }
   return seen;
+}
+
+/** The note for a server that wrote lines to stdout that are not protocol messages. Only a count is known, never the text. */
+export function stdoutNoiseNote(lines: number): string {
+  return `The server wrote ${lines} line${lines === 1 ? "" : "s"} to stdout that ${lines === 1 ? "is not a JSON-RPC message" : "are not JSON-RPC messages"} (a banner or log line). Some clients treat that as a broken connection ("Unexpected token"). Send logs to stderr instead.`;
 }
 
 /** The note for a result that did not complete the handshake. */
